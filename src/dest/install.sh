@@ -5,8 +5,6 @@
 prog_dir="$(dirname $(realpath ${0}))"
 name="$(basename ${prog_dir})"
 logfile="/tmp/DroboApps/${name}/install.log"
-servercrt="${prog_dir}/etc/server.crt"
-serverkey="${prog_dir}/etc/server.key"
 
 # script hardening
 set -o errexit  # exit on uncaught error code
