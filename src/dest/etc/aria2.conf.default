@@ -1,0 +1,12 @@
+enable-rpc=true
+rpc-listen-all=true
+rpc-allow-origin-all=true
+log=/tmp/DroboApps/aria2/log.txt
+log-level=warn
+dir=/mnt/DroboFS/Shares/Public
+save-session=/mnt/DroboFS/Shares/DroboApps/aria2/var/aria2.session
+save-session-interval=60
+input-file=/mnt/DroboFS/Shares/DroboApps/aria2/var/aria2.session
+continue=true
+ca-certificate=/mnt/DroboFS/Shares/DroboApps/aria2/etc/ssl/certs/ca-certificates.crt
+check-certificate
