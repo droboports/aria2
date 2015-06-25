@@ -128,6 +128,7 @@ local FOLDER="www"
 local URL="https://github.com/ziahamza/webui-aria2.git"
 
 _download_git "${BRANCH}" "${FOLDER}" "${URL}"
+patch "target/${FOLDER}/js/services/rpc/rpc.js" "src/webui-aria2-rpc-token-warning.patch"
 cp -vfaR "target/${FOLDER}" "${DEST}/"
 }
 

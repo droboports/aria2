@@ -42,7 +42,7 @@ _is_pid_running() {
 # _is_running
 # returns: 0 if app is running, 1 if not running or pidfile does not exist.
 _is_running() {
-  if ! _is_pid_running "${webserver}" "${pidweb}"; then return 1; fi
+#  if ! _is_pid_running "${webserver}" "${pidweb}"; then return 1; fi
   if ! _is_pid_running "${daemon}" "${pidfile}"; then return 1; fi
   return 0;
 }
@@ -50,7 +50,7 @@ _is_running() {
 # _is_stopped
 # returns: 0 if app is stopped, 1 if running.
 _is_stopped() {
-  if _is_pid_running "${webserver}" "${pidweb}"; then return 1; fi
+#  if _is_pid_running "${webserver}" "${pidweb}"; then return 1; fi
   if _is_pid_running "${daemon}" "${pidfile}"; then return 1; fi
   return 0;
 }
@@ -66,7 +66,9 @@ start() {
   export HOME="${prog_dir}/var"
   "${daemon}" --conf-path="${conffile}" --daemon=true
   echo $(pidof $(basename "${daemon}")) > "${pidfile}"
-  "${webserver}" "${confweb}" & echo $! > "${pidweb}"
+  if ! _is_pid_running "${webserver}" "${pidweb}"; then
+    "${webserver}" "${confweb}" & echo $! > "${pidweb}"
+  fi
 }
 
 stop() {

@@ -1,0 +1,11 @@
+--- rpc.js.old	2015-06-25 15:13:49.381092015 -0700
++++ rpc.js	2015-06-25 15:14:06.624876955 -0700
+@@ -105,8 +105,6 @@
+           // delete the pipelined configurations!!
+           if (currentToken)
+             alerts.addAlert('Successfully connected to Aria2 through its remote RPC …', 'success');
+-          else
+-            alerts.addAlert('Successfully connected to Aria2 through remote RPC, however the connection is still insecure. For complete security try adding an authorization secret token while starting Aria2 (through the flag --rpc-secret)');
+           configurations = [];
+         }
+ 

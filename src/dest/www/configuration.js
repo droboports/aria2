@@ -4,14 +4,13 @@ angular
 .constant('$titlePattern', 'active: {active} - waiting: {waiting} - stopped: {stopped} — {name}')
 .constant('$pageSize', 11)
 .constant('$authconf', {
-  host: 'localhost',
+  host: window.location.hostname,
   port: 6800,
   encrypt: false,
   auth: {
   // token: '$YOUR_SECRET_TOKEN$'
-  /*-----------------------------*/
-  // user: '*YOUR_USERNAME*',
-  // pass: '*YOUR_SECRET_PASS*'
+     user: 'root',
+     pass: 'root'
   },
   directURL: ''
 })
