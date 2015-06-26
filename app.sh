@@ -7,42 +7,39 @@ local URL="http://zlib.net/${FILE}"
 
 _download_tgz "${FILE}" "${URL}" "${FOLDER}"
 pushd "target/${FOLDER}"
-./configure --prefix="${DEPS}" --libdir="${DEST}/lib"
+./configure --prefix="${DEPS}" --libdir="${DEST}/lib" --shared
 make
 make install
-rm -v "${DEST}/lib"/*.a
 popd
 }
 
 ### OPENSSL ###
 _build_openssl() {
-local VERSION="1.0.2"
+local VERSION="1.0.2c"
 local FOLDER="openssl-${VERSION}"
 local FILE="${FOLDER}.tar.gz"
 local URL="http://www.openssl.org/source/${FILE}"
 
 _download_tgz "${FILE}" "${URL}" "${FOLDER}"
-cp -vf src/openssl-1.0.2-parallel-build.patch "target/${FOLDER}/"
+cp -vf "src/${FOLDER}-parallel-build.patch" "target/${FOLDER}/"
 pushd "target/${FOLDER}"
-patch -p1 < openssl-1.0.2-parallel-build.patch
-./Configure --prefix="${DEPS}" \
-  --openssldir="${DEST}/etc/ssl" \
-  --with-zlib-include="${DEPS}/include" \
-  --with-zlib-lib="${DEPS}/lib" \
-  shared zlib-dynamic threads linux-armv4 no-asm -DL_ENDIAN ${CFLAGS} ${LDFLAGS}
+patch -p1 -i "${FOLDER}-parallel-build.patch"
+./Configure --prefix="${DEPS}" --openssldir="${DEST}/etc/ssl" \
+  zlib-dynamic --with-zlib-include="${DEPS}/include" --with-zlib-lib="${DEPS}/lib" \
+  shared threads linux-armv4 no-asm -DL_ENDIAN ${CFLAGS} ${LDFLAGS} -Wa,--noexecstack -Wl,-z,noexecstack
 sed -i -e "s/-O3//g" Makefile
 make
 make install_sw
-cp -v -aR "${DEPS}/lib"/* "${DEST}/lib/"
-rm -v -fr "${DEPS}/lib"
-rm -v "${DEST}/lib"/*.a
+cp -vfaR "${DEPS}/lib"/* "${DEST}/lib/"
+rm -vfr "${DEPS}/lib"
+rm -vf "${DEST}/lib/libcrypto.a" "${DEST}/lib/libssl.a"
 sed -i -e "s|^exec_prefix=.*|exec_prefix=${DEST}|g" "${DEST}/lib/pkgconfig/openssl.pc"
 popd
 }
 
 ### SQLITE ###
 _build_sqlite() {
-local VERSION="3080803"
+local VERSION="3081002"
 local FOLDER="sqlite-autoconf-${VERSION}"
 local FILE="${FOLDER}.tar.gz"
 local URL="http://sqlite.org/$(date +%Y)/${FILE}"
@@ -50,7 +47,7 @@ local URL="http://sqlite.org/$(date +%Y)/${FILE}"
 _download_tgz "${FILE}" "${URL}" "${FOLDER}"
 pushd "target/${FOLDER}"
 ./configure --host="${HOST}" --prefix="${DEPS}" --libdir="${DEST}/lib" --disable-static
-make
+make -j1
 make install
 popd
 }
@@ -87,7 +84,7 @@ popd
 
 ### ARIA2 ###
 _build_aria2() {
-# The Drobo5N toolchain cannout compile Aria2 >= 1.18.0
+# The DroboFS toolchain cannot compile Aria2 >= 1.18.0
 local VERSION="1.17.1"
 local FOLDER="aria2-${VERSION}"
 local FILE="${FOLDER}.tar.xz"
@@ -131,6 +128,7 @@ local FOLDER="www"
 local URL="https://github.com/ziahamza/webui-aria2.git"
 
 _download_git "${BRANCH}" "${FOLDER}" "${URL}"
+patch "target/${FOLDER}/js/services/rpc/rpc.js" "src/webui-aria2-rpc-token-warning.patch"
 cp -vfaR "target/${FOLDER}" "${DEST}/"
 }
 
