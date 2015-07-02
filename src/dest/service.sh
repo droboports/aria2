@@ -31,30 +31,6 @@ if [ -z "${FRAMEWORK_VERSION:-}" ]; then
   . "${prog_dir}/libexec/service.subr"
 fi
 
-# _is_pid_running
-# $1: daemon
-# $2: pidfile
-# returns: 0 if pid is running, 1 if not running or if pidfile does not exist.
-_is_pid_running() {
-  /sbin/start-stop-daemon -K -t -x "${1}" -p "${2}" -q
-}
-
-# _is_running
-# returns: 0 if app is running, 1 if not running or pidfile does not exist.
-_is_running() {
-#  if ! _is_pid_running "${webserver}" "${pidweb}"; then return 1; fi
-  if ! _is_pid_running "${daemon}" "${pidfile}"; then return 1; fi
-  return 0;
-}
-
-# _is_stopped
-# returns: 0 if app is stopped, 1 if running.
-_is_stopped() {
-#  if _is_pid_running "${webserver}" "${pidweb}"; then return 1; fi
-  if _is_pid_running "${daemon}" "${pidfile}"; then return 1; fi
-  return 0;
-}
-
 _create_session() {
   local sessiondir="$(dirname ${sessionfile})"
   if [ ! -d "${sessiondir}" ]; then mkdir -p "${sessiondir}"; fi
@@ -66,7 +42,7 @@ start() {
   export HOME="${prog_dir}/var"
   "${daemon}" --conf-path="${conffile}" --daemon=true
   echo $(pidof $(basename "${daemon}")) > "${pidfile}"
-  if ! _is_pid_running "${webserver}" "${pidweb}"; then
+  if ! is_running "${pidweb}" "${webserver}"; then
     "${webserver}" "${confweb}" & echo $! > "${pidweb}"
   fi
 }
