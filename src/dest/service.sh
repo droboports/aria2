@@ -28,6 +28,7 @@ pidweb="/tmp/DroboApps/${name}/web_server.pid"
 
 # backwards compatibility
 if [ -z "${FRAMEWORK_VERSION:-}" ]; then
+  framework_version="2.0"
   . "${prog_dir}/libexec/service.subr"
 fi
 
