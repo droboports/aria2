@@ -1,3 +1,15 @@
+# $1: file
+# $2: url
+# $3: folder
+_download_zip() {
+  [[ ! -d "download" ]]      && mkdir -p "download"
+  [[ ! -d "target" ]]        && mkdir -p "target"
+  [[ ! -f "download/${1}" ]] && wget -O "download/${1}" "${2}"
+  [[   -d "target/${3}" ]]   && rm -v -fr "target/${3}"
+  [[ ! -d "target/${3}" ]]   && unzip -d "target" "download/${1}"
+  return 0
+}
+
 ### ZLIB ###
 _build_zlib() {
 local VERSION="1.2.8"
@@ -123,13 +135,15 @@ popd
 
 ### WEBUI ###
 _build_webui() {
-local BRANCH="master"
-local FOLDER="www"
-local URL="https://github.com/ziahamza/webui-aria2.git"
+local COMMIT="96b882f75ae3809fb01e6a7063383549e798a3d8"
+local FOLDER="webui-aria2-${COMMIT}"
+local FILE="${FOLDER}.zip"
+local URL="https://github.com/ziahamza/webui-aria2/archive/${COMMIT}.zip"
 
-_download_git "${BRANCH}" "${FOLDER}" "${URL}"
+_download_zip "${FILE}" "${URL}" "${FOLDER}"
 patch "target/${FOLDER}/js/services/rpc/rpc.js" "src/webui-aria2-rpc-token-warning.patch"
-cp -vfaR "target/${FOLDER}" "${DEST}/"
+mkdir -p "${DEST}/www"
+cp -vfaR "target/${FOLDER}/"* "${DEST}/www/"
 }
 
 _build() {
