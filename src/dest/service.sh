@@ -21,6 +21,7 @@ pidfile="${tmp_dir}/pid.txt"
 logfile="${tmp_dir}/log.txt"
 statusfile="${tmp_dir}/status.txt"
 errorfile="${tmp_dir}/error.txt"
+nicelevel=19
 
 webserver="${prog_dir}/libexec/web_server"
 confweb="${prog_dir}/etc/web_server.conf"
@@ -43,8 +44,10 @@ start() {
   export HOME="${prog_dir}/var"
   "${daemon}" --conf-path="${conffile}" --daemon=true
   echo $(pidof $(basename "${daemon}")) > "${pidfile}"
+  renice "${nicelevel}" $(cat "${pidfile}")
   if ! is_running "${pidweb}" "${webserver}"; then
     "${webserver}" "${confweb}" & echo $! > "${pidweb}"
+    renice "${nicelevel}" $(cat "${pidweb}")
   fi
 }
 
