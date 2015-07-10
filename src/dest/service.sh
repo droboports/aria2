@@ -52,12 +52,12 @@ start() {
 }
 
 stop() {
-  /sbin/start-stop-daemon -K -x "${webserver}" -p "${pidweb}" -v
+  /sbin/start-stop-daemon -K -x "${webserver}" -p "${pidweb}" -v -o
   /sbin/start-stop-daemon -K -x "${daemon}" -p "${pidfile}" -v
 }
 
 force_stop() {
-  /sbin/start-stop-daemon -K -s 9 -x "${webserver}" -p "${pidweb}" -v
+  /sbin/start-stop-daemon -K -s 9 -x "${webserver}" -p "${pidweb}" -v -o
   /sbin/start-stop-daemon -K -s 9 -x "${daemon}" -p "${pidfile}" -v
 }
 
