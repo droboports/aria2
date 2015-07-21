@@ -7,7 +7,7 @@
 
 framework_version="2.1"
 name="aria2"
-version="1.17.1"
+version="1.17.1-1"
 description="HTTP/FTP download manager"
 depends=""
 webui=":6880/"
