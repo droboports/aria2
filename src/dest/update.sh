@@ -22,3 +22,6 @@ if [ -f "${prog_dir}/etc/aria2.conf" ]; then
     sed -e "s|log=${tmp_dir}/log.txt|log=${tmp_dir}/aria2.log|g" -i "${prog_dir}/etc/aria2.conf"
   fi
 fi
+
+# Remove old web ui
+rm -fR "${prog_dir}/www"
