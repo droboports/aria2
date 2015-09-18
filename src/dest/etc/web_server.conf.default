@@ -1,4 +1,0 @@
-listening_port 6880
-document_root /mnt/DroboFS/Shares/DroboApps/aria2/www
-auth_domain Aria2
-global_auth_file /mnt/DroboFS/Shares/DroboApps/aria2/etc/htpasswd

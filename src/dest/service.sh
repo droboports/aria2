@@ -7,10 +7,10 @@
 
 framework_version="2.1"
 name="aria2"
-version="1.17.1-1"
-description="HTTP/FTP download manager"
+version="1.17.1-2"
+description="The next generation download utility"
 depends=""
-webui=":6880/"
+webui="WebUI"
 
 prog_dir="$(dirname "$(realpath "${0}")")"
 daemon="${prog_dir}/bin/aria2c"
@@ -23,9 +23,9 @@ statusfile="${tmp_dir}/status.txt"
 errorfile="${tmp_dir}/error.txt"
 nicelevel=19
 
-webserver="${prog_dir}/libexec/web_server"
-confweb="${prog_dir}/etc/web_server.conf"
-pidweb="/tmp/DroboApps/${name}/web_server.pid"
+apachedaemon="${DROBOAPPS_DIR}/apache/service.sh"
+appconffile="${prog_dir}/etc/aria2app.conf"
+apachefile="${DROBOAPPS_DIR}/apache/conf/includes/aria2app.conf"
 
 # backwards compatibility
 if [ -z "${FRAMEWORK_VERSION:-}" ]; then
@@ -45,19 +45,19 @@ start() {
   "${daemon}" --conf-path="${conffile}" --daemon=true
   echo $(pidof $(basename "${daemon}")) > "${pidfile}"
   renice "${nicelevel}" $(cat "${pidfile}")
-  if ! is_running "${pidweb}" "${webserver}"; then
-    "${webserver}" "${confweb}" & echo $! > "${pidweb}"
-    renice "${nicelevel}" $(cat "${pidweb}")
-  fi
+  cp -vf "${appconffile}" "${apachefile}"
+  "${apachedaemon}" restart || true
 }
 
 stop() {
-  /sbin/start-stop-daemon -K -x "${webserver}" -p "${pidweb}" -v -o
+  rm -vf "${apachefile}"
+  "${apachedaemon}" restart || true
   /sbin/start-stop-daemon -K -x "${daemon}" -p "${pidfile}" -v
 }
 
 force_stop() {
-  /sbin/start-stop-daemon -K -s 9 -x "${webserver}" -p "${pidweb}" -v -o
+  rm -vf "${apachefile}"
+  "${apachedaemon}" restart || true
   /sbin/start-stop-daemon -K -s 9 -x "${daemon}" -p "${pidfile}" -v
 }
 
@@ -69,7 +69,6 @@ STDERR=">&4"
 echo "$(date +"%Y-%m-%d %H-%M-%S"):" "${0}" "${@}"
 set -o errexit  # exit on uncaught error code
 set -o nounset  # exit on unset variable
-set -o pipefail # propagate last error code on pipe
 set -o xtrace   # enable script tracing
 
 main "${@}"

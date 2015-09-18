@@ -1,0 +1,2 @@
+<p>This DroboApp deploys <?php echo $appname; ?> on your Drobo.</p>
+<p><?php echo $appname; ?> is a lightweight multi-protocol and multi-source download utility. It supports HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink. <?php echo $appname; ?> is controlled using <a href="https://github.com/ziahamza/webui-aria2" target="_new">webui-aria2</a>.</p>

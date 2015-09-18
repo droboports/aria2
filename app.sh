@@ -18,7 +18,7 @@ _build_openssl() {
 local VERSION="1.0.2d"
 local FOLDER="openssl-${VERSION}"
 local FILE="${FOLDER}.tar.gz"
-local URL="http://www.openssl.org/source/${FILE}"
+local URL="http://mirror.switch.ch/ftp/mirror/openssl/source/${FILE}"
 
 _download_tgz "${FILE}" "${URL}" "${FOLDER}"
 cp -vf "src/${FOLDER}-parallel-build.patch" "target/${FOLDER}/"
@@ -39,7 +39,7 @@ popd
 
 ### SQLITE ###
 _build_sqlite() {
-local VERSION="3081002"
+local VERSION="3081101"
 local FOLDER="sqlite-autoconf-${VERSION}"
 local FILE="${FOLDER}.tar.gz"
 local URL="http://sqlite.org/$(date +%Y)/${FILE}"
@@ -47,7 +47,7 @@ local URL="http://sqlite.org/$(date +%Y)/${FILE}"
 _download_tgz "${FILE}" "${URL}" "${FOLDER}"
 pushd "target/${FOLDER}"
 ./configure --host="${HOST}" --prefix="${DEPS}" --libdir="${DEST}/lib" --disable-static
-make -j1
+make
 make install
 popd
 }
@@ -93,8 +93,13 @@ local URL="http://sourceforge.net/projects/aria2/files/stable/${FOLDER}/${FILE}"
 _download_xz "${FILE}" "${URL}" "${FOLDER}"
 pushd "target/${FOLDER}"
 PKG_CONFIG_PATH="${DEST}/lib/pkgconfig" \
- XML2_CONFIG="${DEPS}/bin/xml2-config" \
- ./configure --host="${HOST}" --prefix="${DEST}" --disable-static --enable-libaria2 --with-libz --with-openssl --with-sqlite3 --with-libxml2 --with-libcares --without-libuv --without-appletls --without-gnutls --without-libnettle --without-libgmp --without-libgcrypt --without-libexpat --with-ca-bundle="${DEST}/etc/ssl/certs/ca-certificates.crt"
+  XML2_CONFIG="${DEPS}/bin/xml2-config" \
+  ./configure --host="${HOST}" --prefix="${DEST}" --mandir="${DEST}/man" \
+    --disable-static --enable-libaria2 \
+    --with-libz --with-openssl --with-sqlite3 --with-libxml2 --with-libcares \
+    --without-libuv --without-appletls --without-gnutls --without-libnettle \
+    --without-libgmp --without-libgcrypt --without-libexpat \
+    --with-ca-bundle="${DEST}/etc/ssl/certs/ca-certificates.crt"
 make
 make install
 popd
@@ -105,21 +110,7 @@ _build_certificates() {
 # update CA certificates on a Debian/Ubuntu machine:
 #sudo update-ca-certificates
 cp -vf /etc/ssl/certs/ca-certificates.crt "${DEST}/etc/ssl/certs/"
-}
-
-### MONGOOSE ###
-_build_mongoose() {
-local COMMIT="524aa2e58699491b5a0bca53d5fb3e4c33e05d8e"
-local FOLDER="mongoose-${COMMIT}"
-local FILE="${FOLDER}.zip"
-local URL="https://github.com/cesanta/mongoose/archive/${COMMIT}.zip"
-
-_download_zip "${FILE}" "${URL}" "${FOLDER}"
-pushd "target/${FOLDER}/examples/web_server"
-make
-mkdir -p "${DEST}/libexec"
-cp web_server "${DEST}/libexec/"
-popd
+ln -vfs certs/ca-certificates.crt "${DEST}/etc/ssl/cert.pem"
 }
 
 ### WEBUI ###
@@ -131,8 +122,8 @@ local URL="https://github.com/ziahamza/webui-aria2/archive/${COMMIT}.zip"
 
 _download_zip "${FILE}" "${URL}" "${FOLDER}"
 patch "target/${FOLDER}/js/services/rpc/rpc.js" "src/webui-aria2-rpc-token-warning.patch"
-mkdir -p "${DEST}/www"
-cp -vfaR "target/${FOLDER}/"* "${DEST}/www/"
+mkdir -p "${DEST}/app"
+cp -vfaR "target/${FOLDER}/"* "${DEST}/app/"
 }
 
 _build() {
@@ -143,7 +134,6 @@ _build() {
   _build_cares
   _build_aria2
   _build_certificates
-  _build_mongoose
   _build_webui
   _package
 }
