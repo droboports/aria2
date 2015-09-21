@@ -1,8 +1,8 @@
 enable-rpc=true
 rpc-listen-all=true
 rpc-allow-origin-all=true
-rpc-user=root
-rpc-passwd=root
+//rpc-user=root
+//rpc-passwd=root
 log=/tmp/DroboApps/aria2/aria2.log
 log-level=warn
 dir=/mnt/DroboFS/Shares/Public

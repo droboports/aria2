@@ -9,8 +9,8 @@ angular
   encrypt: false,
   auth: {
   // token: '$YOUR_SECRET_TOKEN$'
-     user: 'root',
-     pass: 'root'
+  // user: 'root',
+  // pass: 'root'
   },
   directURL: ''
 })
